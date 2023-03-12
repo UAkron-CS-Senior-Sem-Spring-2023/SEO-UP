@@ -1,0 +1,30 @@
+//html file to output
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  //title name
+  <title>SEO-UP</title>
+</head>
+<body>
+  <h1>Strings:</h1>
+  <ul id="strings-list"></ul>
+
+  <script>
+    //fetch the strings data from the server
+    fetch('/strings')
+      .then(response => response.json())
+      .then(strings => {
+        //update the HTML with the strings data
+        const stringsList = document.getElementById('strings-list');
+        strings.forEach(str => {
+          const li = document.createElement('li');
+          li.innerText = str;
+          stringsList.appendChild(li);
+        });
+      })
+      .catch(error => console.error(error));
+  </script>
+</body>
+</html>
