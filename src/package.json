@@ -1,0 +1,26 @@
+{
+  "name": "seo-up",
+  "version": "1.0.0",
+  "description": "Parse words and compare to a database to improve search analytics",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "\"node index.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UAkron-CS-Senior-Sem-Spring-2023/SEO-UP.git"
+  },
+  "author": "SEO-UP",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UAkron-CS-Senior-Sem-Spring-2023/SEO-UP/issues"
+  },
+  "homepage": "https://github.com/UAkron-CS-Senior-Sem-Spring-2023/SEO-UP#readme",
+  "keywords": [
+    "Parse",
+    "Python",
+    "Node",
+    "Postgres"
+  ]
+}

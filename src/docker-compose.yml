@@ -1,28 +1,32 @@
+version: "1.0"
 services:
   redis:
-    image: redis
-
+    image: redis:latest
+    container_name: redis
+    ports:
+        - 80:3000
+    environment:
+        - /src/seo.env
+    tty: true
   app:
     image: node:19-alpine
-    command: sh -c "yarn install && yarn run dev"
+    container_name: SEO
+    command: sh -c "npm init -y && yarn install && yarn run env"
     ports:
-      - 5000:5000
-    working_dir: /app
-    volumes:
-      - ./:/app
+      - 5432:5432
+    working_dir: /src
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: todos
-
-  postgres:
+      - /src/seo.env
+    healthcheck:
+      test: pg_isready -d postgres -U root
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  db:
     image: postgres:15.2-bullseye
-    volumes:
-      - test:/var/lib/postgres
+    restart: always
+    container_name: postgres
     environment:
-      POSTGRES_ROOT_PASSWORD: secret
-      POSTGRES_DATABASE: todos
-
+      - POSTGRES_PASSWORD=admin
 volumes:
-  test:
+  dbdata:
