@@ -61,7 +61,8 @@ services:
       - "3000:3000"
       - "3300:3300"
     volumes:
-      - ./frontend:/app
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
     healthcheck:
       test: curl --fail -s http://localhost:3000/ || exit 1
       interval: 1s
