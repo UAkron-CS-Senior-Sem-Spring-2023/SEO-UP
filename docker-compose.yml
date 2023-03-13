@@ -31,5 +31,25 @@ services:
       timeout: 10s
       retries: 10
 
+  scraper:
+    build:
+      context: ./webscraper
+      target: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3001:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./webscraper:/app
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 30
+
+
 volumes:
   pgdata:

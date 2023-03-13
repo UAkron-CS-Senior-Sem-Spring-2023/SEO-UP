@@ -12,3 +12,5 @@ With these goals, we’re certain we’ll be able to create a product that provi
 # Project details
 
 Webscraper uses [Pipenv](https://pipenv.pypa.io/en/latest/) for package management
+
+Look into waitress for running in prod for brownie points
