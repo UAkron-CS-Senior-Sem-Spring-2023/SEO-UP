@@ -1,0 +1,89 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    restart: on-failure:10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: wget -O - http://localhost:80/misc/ping
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  webscraper:
+    build:
+      context: ./webscraper
+      target: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3001:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./webscraper:/app
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 30
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+      - "3300:3300"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    healthcheck:
+      test: curl --fail -s http://localhost:3000/ || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 30
+
+  nginx:
+    ports:
+      - "80:80"
+    depends_on:
+      webscraper:
+        condition: service_started
+      frontend:
+        condition: service_healthy
+    build:
+      context: ./nginx
+    healthcheck:
+      test: curl --fail -s http://localhost/ || exit 1
+      interval: 2s
+      timeout: 10s
+      retries: 30
+
+volumes:
+  pgdata:
