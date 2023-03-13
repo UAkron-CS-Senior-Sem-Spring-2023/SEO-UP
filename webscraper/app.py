@@ -20,7 +20,7 @@ def status():
     return "Hello world", 200
 
 
-@app.route("/parse", methods=["POST"])
+@app.route("/api/webscraper/parse", methods=["POST"])
 def parse_website():
     try:
         payload = request.get_json()

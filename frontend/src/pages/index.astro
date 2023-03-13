@@ -32,6 +32,26 @@ import Card from '../components/Card.astro';
 				body="Come say hi to our amazing Discord community. ❤️"
 			/>
 		</ul>
+<script>
+    const scrapeurl = async (url: string) => {
+        const req = await fetch('/api/webscraper/parse', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                url: url
+            })
+        })
+        if(req.status !== 200){
+            console.log(req.status)
+            return
+        }
+        const res = await req.json()
+        console.log(res['words'])
+    }
+    window.scrapeurl = scrapeurl
+</script>
 	</main>
 </Layout>
 

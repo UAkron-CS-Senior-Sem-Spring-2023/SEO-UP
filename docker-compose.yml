@@ -31,7 +31,7 @@ services:
       timeout: 10s
       retries: 10
 
-  scraper:
+  webscraper:
     build:
       context: ./webscraper
       target: dev
@@ -50,7 +50,6 @@ services:
       timeout: 10s
       retries: 30
 
-
   frontend:
     build:
       context: ./frontend
@@ -59,12 +58,29 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "80:3000"
+      - "3000:3000"
+      - "3300:3300"
     volumes:
       - ./frontend:/app
     healthcheck:
       test: curl --fail -s http://localhost:3000/ || exit 1
       interval: 1s
+      timeout: 10s
+      retries: 30
+
+  nginx:
+    ports:
+      - "80:80"
+    depends_on:
+      webscraper:
+        condition: service_started
+      frontend:
+        condition: service_healthy
+    build:
+      context: ./nginx
+    healthcheck:
+      test: curl --fail -s http://localhost/ || exit 1
+      interval: 2s
       timeout: 10s
       retries: 30
 
