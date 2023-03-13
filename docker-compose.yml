@@ -51,5 +51,22 @@ services:
       retries: 30
 
 
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "80:3000"
+    volumes:
+      - ./frontend:/app
+    healthcheck:
+      test: curl --fail -s http://localhost:3000/ || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 30
+
 volumes:
   pgdata:
