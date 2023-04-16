@@ -1,101 +1,41 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="SEO-UP">
 	<main>
-		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
-		<p class="instructions">
-			To get started, open the directory <code>src/pages</code> in your project.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
-		</p>
-		<ul role="list" class="link-card-grid">
-			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
-			/>
-			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
-			/>
-			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
-			/>
-		</ul>
-<script>
-    const scrapeurl = async (url: string) => {
-        const req = await fetch('/api/webscraper/parse', {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                url: url
-            })
-        })
-        if(req.status !== 200){
-            console.log(req.status)
-            return
-        }
-        const res = await req.json()
-        console.log(res['words'])
-    }
-    window.scrapeurl = scrapeurl
-</script>
+		<div id="inputenter">
+			<input class="input" placeholder="Input URL">
+			<button id="enter">Enter</button>
+		</div>
+		<script>
+			import "../scripts/enter.ts";
+		</script>
 	</main>
 </Layout>
 
 <style>
-	main {
-		margin: auto;
-		padding: 1.5rem;
-		max-width: 60ch;
+	#inputenter {
+		position: absolute;
+		width: 100%;
+		top: 50%;
+		right: 50%;
+		transform: translate(50%, -50%);
 	}
-	h1 {
-		font-size: 3rem;
-		font-weight: 800;
-		margin: 0;
-	}
-	.text-gradient {
-		background-image: var(--accent-gradient);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-size: 400%;
-		background-position: 0%;
-	}
-	.instructions {
-		line-height: 1.6;
-		margin: 1rem 0;
-		border: 1px solid rgba(var(--accent), 25%);
+
+	.input {
+		margin: 0px 10px 0px 50%;
+		border: 1px solid grey;
+		border-radius: 5px;
+		height: 20px;
+		width: 25%;
+		outline: 0;
+		background-color: #f5f5f5;
+		text-align: left;
+  	}
+
+	.input:hover, .input:focus {
+		border: 1.5px solid #009688;
 		background-color: white;
-		padding: 1rem;
-		border-radius: 0.4rem;
-	}
-	.instructions code {
-		font-size: 0.875em;
-		font-weight: bold;
-		background: rgba(var(--accent), 12%);
-		color: rgb(var(--accent));
-		border-radius: 4px;
-		padding: 0.3em 0.45em;
-	}
-	.instructions strong {
-		color: rgb(var(--accent));
-	}
-	.link-card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		gap: 1rem;
-		padding: 0;
-	}
+  	}
 </style>

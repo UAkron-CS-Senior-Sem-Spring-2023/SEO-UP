@@ -19,7 +19,6 @@ app = Flask(__name__)
 def status():
     return "Hello world", 200
 
-
 @app.route("/api/webscraper/parse", methods=["POST"])
 def parse_website():
     try:
@@ -34,8 +33,6 @@ def parse_website():
         req = requests.get(url)
         req.raise_for_status()
         soup = BeautifulSoup(req.text, "lxml")
-        file = open("testOutput.txt", "w")
-        file.write(soup.prettify())
         titleWords = Counter()
         if soup.head:
             title = (

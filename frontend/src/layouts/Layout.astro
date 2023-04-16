@@ -1,8 +1,4 @@
 ---
-export interface Props {
-	title: string;
-}
-
 const { title } = Astro.props;
 ---
 
@@ -15,21 +11,46 @@ const { title } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
+	<header class="header">
+		SEO-UP
+	</header>
 	<body>
 		<slot />
 	</body>
 </html>
+
 <style is:global>
 	:root {
-		--accent: 124, 58, 237;
-		--accent-gradient: linear-gradient(45deg, rgb(var(--accent)), #da62c4 30%, white 60%);
+		min-height: 100vh;
+		font-family: Arial, Helvetica, sans-serif;
+		background: linear-gradient(rgb(230, 167, 255), rgb(212, 109, 253));
+		overflow: hidden;
 	}
-	html {
-		font-family: system-ui, sans-serif;
-		background-color: #F6F6F6;
+
+	.header {
+		margin: auto;
+		padding: 1vh 1vw;
+		background-color: rgb(212, 109, 253);
+		font-weight: bold;
+		text-align: center;
+		word-wrap: break-word;
+		color: white;
+		border-radius: 3px;
 	}
-	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-			Bitstream Vera Sans Mono, Courier New, monospace;
+
+	@media screen and (min-width: 601px) {
+		.header {
+			font-size: 2vw;
+			width: 8vw;
+			height: 2vw;
+		}
+	}
+
+	@media screen and (max-width: 600px) {
+		.header {
+			font-size: 30px;
+			width: 120px;
+			height: 30px;
+		}
 	}
 </style>
