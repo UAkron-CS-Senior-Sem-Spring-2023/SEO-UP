@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="SEO-UP">
 	<main>
 		<div id="inputenter">
-			<input class="input" placeholder="Input URL">
+			<input class="input" id="input" placeholder="Input URL">
 			<button id="enter">Enter</button>
 		</div>
 		<script>
@@ -20,14 +20,13 @@ import Layout from '../layouts/Layout.astro';
 		width: 100%;
 		top: 50%;
 		right: 50%;
-		transform: translate(50%, -50%);
+		transform: translate(35%, -50%);
 	}
 
 	.input {
 		margin: 0px 10px 0px 50%;
 		border: 1px solid grey;
 		border-radius: 5px;
-		height: 20px;
 		width: 25%;
 		outline: 0;
 		background-color: #f5f5f5;
@@ -38,4 +37,12 @@ import Layout from '../layouts/Layout.astro';
 		border: 1.5px solid #009688;
 		background-color: white;
   	}
+
+	#enter {
+		width: 8%
+	}
+
+	#enter:active {
+		color: gray;
+	}
 </style>

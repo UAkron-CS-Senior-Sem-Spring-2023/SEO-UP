@@ -33,7 +33,7 @@ def parse_website():
         req = requests.get(url)
         req.raise_for_status()
         soup = BeautifulSoup(req.text, "lxml")
-        titleWords = Counter()
+        words = Counter()
         if soup.head:
             title = (
                 soup.title.string
@@ -42,15 +42,14 @@ def parse_website():
             )
             wordOutput = re.findall(r"\w+", title)
             for word in wordOutput:
-                titleWords[word] += 1
+                words[word] += 1
         if soup.body:
-            paragraphWords = Counter()
             for paragraph in soup.find_all("p"):
                 wordOutput = re.findall(r"\w+", paragraph.text)
                 for word in wordOutput:
-                    paragraphWords[word] += 1
-        print(titleWords, flush=True)
-        return {"words": titleWords}, 200
+                    words[word] += 1
+                    
+        return {"words": words}, 200
 
     except Exception:
         error = traceback.format_exc()
