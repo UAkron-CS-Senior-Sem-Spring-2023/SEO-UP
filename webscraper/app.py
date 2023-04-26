@@ -2,6 +2,7 @@
 
 # import library
 import traceback
+import psycopg2
 from bs4 import BeautifulSoup
 from flask import request
 import requests
@@ -14,15 +15,53 @@ from flask import Flask
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def status():
     return "Hello world", 200
 
+def connect(word):
+    """ Connect to the PostgreSQL database server """
+
+    conn = None
+    try:
+    # connect to the PostgreSQL server
+        print('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(user="admin", database="postgres", password="admin", host="postgres", port=5432)
+        conn.autocommit = True
+
+    # create a cursor
+        cur = conn.cursor() 
+        
+    # execute a statement
+    # write to table
+        print('Connected to Database. Executing Query\n')
+        
+    # delete exisitng table, create, insert, show that it is inserted
+        cur.execute("DROP TABLE IF EXISTS keywords;")
+        cur.execute("CREATE TABLE IF NOT EXISTS keywords(first_keyword CHAR (45));")
+        cur.execute("INSERT INTO keywords VALUES(%s);", (word,))
+        cur.execute("SELECT * FROM keywords;")
+        database = cur.fetchall()
+
+    # close the communication with the PostgreSQL
+        cur.close()
+
+        for x in database:
+            print(x)
+        
+        return word
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            print('Database connection closed.\n')
 
 @app.route("/api/webscraper/parse", methods=["POST"])
 def parse_website():
     try:
+        database = 0
         payload = request.get_json()
         if payload == None:
             return "", 400
@@ -34,9 +73,7 @@ def parse_website():
         req = requests.get(url)
         req.raise_for_status()
         soup = BeautifulSoup(req.text, "lxml")
-        file = open("testOutput.txt", "w")
-        file.write(soup.prettify())
-        titleWords = Counter()
+        words = Counter()
         if soup.head:
             title = (
                 soup.title.string
@@ -45,21 +82,21 @@ def parse_website():
             )
             wordOutput = re.findall(r"\w+", title)
             for word in wordOutput:
-                titleWords[word] += 1
+                connect(word)
+                words[word] += 1
         if soup.body:
-            paragraphWords = Counter()
             for paragraph in soup.find_all("p"):
                 wordOutput = re.findall(r"\w+", paragraph.text)
                 for word in wordOutput:
-                    paragraphWords[word] += 1
-        print(titleWords, flush=True)
-        return {"words": titleWords}, 200
+                    connect(word)
+                    words[word] += 1
+
+        return {"words": words}, 200
 
     except Exception:
         error = traceback.format_exc()
         print(error, flush=True)
         return "", 500
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)

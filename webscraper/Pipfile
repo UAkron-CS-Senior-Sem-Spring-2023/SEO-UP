@@ -7,4 +7,4 @@ name = "pypi"
 flask = "*"
 bs4 = "*"
 pytrends = "*"
-
+psycopg2 = "*"

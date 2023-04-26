@@ -5,8 +5,7 @@ RUN python -m pip install --no-cache --upgrade pip pipenv
 COPY Pipfile Pipfile.lock /app/
 RUN pipenv lock && pipenv --clear && pipenv --rm
 RUN pipenv install --clear --system
-
 COPY *.py /app/
 
-FROM base as dev
+FROM base as dev 
 CMD ["python", "-u", "app.py"]
