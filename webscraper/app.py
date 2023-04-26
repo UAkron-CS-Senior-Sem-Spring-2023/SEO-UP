@@ -6,9 +6,7 @@ from bs4 import BeautifulSoup
 from flask import request
 import requests
 import re
-from collections import Counter
 from pytrends.request import TrendReq
-import os
 
 from flask import Flask
 
@@ -30,10 +28,14 @@ def parse_website():
             return "", 400
         pytrends = TrendReq(hl="en-US", tz=360)
         # Request to website and download HTML contents
-        req = requests.get(url)
-        req.raise_for_status()
+        try:
+            req = requests.get(url)
+            req.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Error while fetching URL: {e}", flush=True)
+            return "", 500
         soup = BeautifulSoup(req.text, "lxml")
-        words = Counter()
+        words = []
         if soup.head:
             title = (
                 soup.title.string
@@ -42,14 +44,24 @@ def parse_website():
             )
             wordOutput = re.findall(r"\w+", title)
             for word in wordOutput:
-                words[word] += 1
+                if word not in words:
+                    words.append(word)
         if soup.body:
             for paragraph in soup.find_all("p"):
                 wordOutput = re.findall(r"\w+", paragraph.text)
                 for word in wordOutput:
-                    words[word] += 1
-                    
-        return {"words": words}, 200
+                    if word not in words:
+                        words.append(word)
+        for word in words.copy():
+            if re.match(r'^\d+$', word) or len(word) < 3:
+                words.remove(word)
+        trendMean = [];
+        for index, word in zip(range(50), words):
+            kw_list = [word]
+            pytrends.build_payload(kw_list, cat=0, timeframe='today 1-m', geo='', gprop='')
+            data = pytrends.interest_over_time()
+            trendMean.append(int(data.mean().values[0]))
+        return {"words": words, "trendMean": trendMean}, 200
 
     except Exception:
         error = traceback.format_exc()
