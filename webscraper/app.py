@@ -21,6 +21,7 @@ def connect(word):
     """ Connect to the PostgreSQL database server """
 
     conn = None
+    database = []
     try:
     # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
@@ -36,7 +37,7 @@ def connect(word):
         
     # delete exisitng table, create, insert, show that it is inserted
         cur.execute("DROP TABLE IF EXISTS keywords;")
-        cur.execute("CREATE TABLE IF NOT EXISTS keywords(first_keyword CHAR (45));")
+        cur.execute("CREATE TABLE IF NOT EXISTS keywords(keyword CHAR (45));")
         cur.execute("INSERT INTO keywords VALUES(%s);", (word,))
         cur.execute("SELECT * FROM keywords;")
         database = cur.fetchall()
@@ -44,10 +45,8 @@ def connect(word):
     # close the communication with the PostgreSQL
         cur.close()
 
-        for x in database:
-            print(x)
-        
-        return word
+        data = [word[0].strip() for word in database]
+        return data
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -75,6 +74,7 @@ def parse_website():
             return "", 500
         soup = BeautifulSoup(req.text, "lxml")
         words = []
+        database = []
         if soup.head:
             title = (
                 soup.title.string
@@ -85,13 +85,14 @@ def parse_website():
             for word in wordOutput:
                 if word not in words:
                     words.append(word)
-                    connect(word)
+                    database += connect(word)
         if soup.body:
             for paragraph in soup.find_all("p"):
                 wordOutput = re.findall(r"\w+", paragraph.text)
                 for word in wordOutput:
                     if word not in words:
                         words.append(word)
+                        database += connect(word)
         for word in words.copy():
             if re.match(r'^\d+$', word) or len(word) < 3:
                 words.remove(word)
@@ -101,7 +102,7 @@ def parse_website():
             pytrends.build_payload(kw_list, cat=0, timeframe='today 1-m', geo='', gprop='')
             data = pytrends.interest_over_time()
             trendMean.append(int(data.mean().values[0]))
-        return {"words": words, "trendMean": trendMean}, 200
+        return {"words": words, "trendMean": trendMean, "database": database}, 200
 
     except Exception:
         error = traceback.format_exc()

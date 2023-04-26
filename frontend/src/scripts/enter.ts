@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await req.json();
             console.log(res['words']);
             console.log(res['trendMean']);
+            console.log(res['database']);
         })();
     };
 });
